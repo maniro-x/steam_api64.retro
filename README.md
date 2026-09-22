@@ -25,8 +25,8 @@ screen, and sending the game's discoveries traffic to a server of your choice.
 ## Build compatibility
 
 The DLL no longer refuses executables just because their PE timestamp is newer
-than 1.38. Both the original (wrapped) `NMS.exe` and a Steamless-unpacked one
-work for the legacy builds this project targets.
+than 1.38. Timestamp-based default settings are still selected by matching known
+build timestamps in `DEFAULT_IDS`.
 
 ## Install and settings
 
