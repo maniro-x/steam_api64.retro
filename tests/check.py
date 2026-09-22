@@ -1,5 +1,5 @@
 """Sanity check for a built steam_api64.dll: exports cover every import the legacy
-NMS builds make, and the build cap and default-ID table match the real executables.
+NMS builds make, and the default-ID table matches the real executables.
 
     python tests/check.py [path\\to\\steam_api64.dll] [E:\\NMSLegacy]
 """
@@ -20,9 +20,7 @@ exports = {e.name.decode() for e in pe.DIRECTORY_ENTRY_EXPORT.symbols if e.name}
 assert NEEDED <= exports, "missing exports: %s" % sorted(NEEDED - exports)
 
 src = open(os.path.join(HERE, "..", "src", "steam_api64.cpp")).read()
-cap = int(re.search(r"LAST_SUPPORTED_BUILD = 0x([0-9a-f]{8})", src).group(1), 16)
 defaults = {int(t, 16): int(i) for t, i in re.findall(r"\{0x([0-9a-f]{8}), (\d+)\}", src)}
-assert max(defaults) == cap, "cap should be the newest build in DEFAULT_IDS"
 
 found, exes = {}, {}
 for ver in os.listdir(legacy) if os.path.isdir(legacy) else []:
@@ -30,7 +28,6 @@ for ver in os.listdir(legacy) if os.path.isdir(legacy) else []:
         exe = os.path.join(legacy, ver, "Binaries", name)
         if os.path.exists(exe):
             ts = pefile.PE(exe, fast_load=True).FILE_HEADER.TimeDateStamp
-            assert ts <= cap, "%s has timestamp %08x, newer than the cap" % (exe, ts)
             found[ver] = defaults.get(ts, 0)
             exes[ver] = exe
             break
@@ -79,4 +76,4 @@ for ver, exe in exes.items():
         checked += 1
         break
 
-print("exports ok; cap ok; save id signature ok on %d build(s); default ids:" % checked, found or "no local builds found")
+print("exports ok; save id signature ok on %d build(s); default ids:" % checked, found or "no local builds found")

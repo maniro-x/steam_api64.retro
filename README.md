@@ -22,12 +22,11 @@ It does two jobs:
 Two optional extras, both off by default: skipping the mods-enabled warning
 screen, and sending the game's discoveries traffic to a server of your choice.
 
-## Capped at 1.38
+## Build compatibility
 
-The DLL refuses, with a message box, any executable whose PE timestamp is newer
-than the 1.38 build (`LAST_SUPPORTED_BUILD` in `src/steam_api64.cpp`). Every
-older build passes. Both the original (wrapped) `NMS.exe` and a
-Steamless-unpacked one work.
+The DLL no longer refuses executables just because their PE timestamp is newer
+than 1.38. Timestamp-based default settings are still selected by matching known
+build timestamps in `DEFAULT_IDS`.
 
 ## Install and settings
 
