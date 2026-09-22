@@ -17,8 +17,6 @@
 bool steamstub_prepare(HMODULE exe, void (*after)());   // steamstub.cpp
 
 static const uint32_t APPID = 275850;
-static const uint32_t LAST_SUPPORTED_BUILD = 0x59ce2f3c;   // PE timestamp of the 1.38 (Atlas Rises) NMS.exe; anything newer is refused
-
 // ---- logging: create an empty steam_api64.retro.log next to the DLL to enable ----
 static char  g_dir[MAX_PATH];
 static FILE* g_log;
@@ -391,11 +389,6 @@ BOOL WINAPI DllMain(HINSTANCE h, DWORD reason, LPVOID) {
 
     HMODULE exe = GetModuleHandleA(0);
     IMAGE_NT_HEADERS* nt = (IMAGE_NT_HEADERS*)((uint8_t*)exe + ((IMAGE_DOS_HEADER*)exe)->e_lfanew);
-    if (nt->FileHeader.TimeDateStamp > LAST_SUPPORTED_BUILD) {
-        retro_log("exe timestamp %08x is newer than 1.38, refusing", nt->FileHeader.TimeDateStamp);
-        MessageBoxA(0, "steam_api64.retro only works with No Man's Sky builds up to 1.38 (Atlas Rises).", "steam_api64.retro", MB_ICONERROR);
-        TerminateProcess(GetCurrentProcess(), 1);
-    }
     load_settings(nt->FileHeader.TimeDateStamp);
     if (g_srv.on) hook_winhttp(exe);   // the import table is not encrypted, so this can happen before the unwrap
     bool wrapped = steamstub_prepare(exe, patch_code);
